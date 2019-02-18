@@ -1,17 +1,29 @@
-(function() {
-  navigator.serviceWorker.addEventListener("message", event => {
-    console.log(event.data);
+const url = "https://jsonplaceholder.typicode.com/todos/1";
+const domEl = document.getElementById("data-dump");
+
+const clearDataDump = () => {
+  domEl.innerHTML = "empty";
+};
+
+const updateData = data => {
+  domEl.innerHTML = JSON.stringify(data);
+};
+
+const getData = (needRefresh = false) => {
+  if (needRefresh) return fetch(url).then(fResp => fResp.json());
+  return caches.match(url).then(response => {
+    if (response) {
+      console.log("served from cache", url);
+      return response.json();
+    } else return fetch(url).then(fResp => fResp.json());
   });
+};
 
-  function updateData(data) {
-    var domEl = document.getElementById("data-dump");
-    domEl.innerHTML = data;
-  }
+const request = needRefresh => async () => {
+  clearDataDump();
+  const jsonData = await getData(needRefresh);
+  updateData(jsonData);
+};
 
-  fetch("https://jsonplaceholder.typicode.com/todos/1")
-    .then(response => response.json())
-    .then(data => {
-      console.log("fetch", data);
-      updateData(JSON.stringify(data));
-    });
-})();
+const onGetFreshAndUpdate = request(true);
+const onGetCachedAndUpdate = request(false);
