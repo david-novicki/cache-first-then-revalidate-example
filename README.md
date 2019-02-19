@@ -1,6 +1,6 @@
 # Cache-First-Then-Revalidate
 
-This repository contains a Proof of Concept for a cache first then revalidate strategy using a Service Worker.
+This repository contains a Proof of Concept for a cache first then revalidate strategy using a Service Worker. This app must be served from a web server, I recommend [Web Server for Chrome](https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb?hl=en) from the root directory of this project.
 
 ## service-worker.js
 
@@ -11,11 +11,15 @@ The role of our service worker here is to cache fetch requests that in the white
 This file holds our `cacheFirstAndRevalidate()` api. This api is documented below
 
 ## cacheFirstAndRevalidate()
+
 API
+
 ```
 cacheFirstAndRevalidate(url, needFresh, options)
 ```
+
 Example usage
+
 ```js
 // Example usage using stale then revalidate hook
 const jsonData = await cacheFirstAndRevalidate(
