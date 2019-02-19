@@ -10,11 +10,7 @@ const updateData = data => {
 
 const simpleFetch = url => fetch(url).then(fResp => fResp.json());
 
-const cacheFirstAndRevalidate = (
-  url,
-  needFresh = false,
-  { refreshFn, errorFn } = {}
-) => {
+const cacheFirstAndRevalidate = (url, needFresh = false, cb) => {
   // start network request immediately
   const networkPromise = simpleFetch(url);
   // if no cache version is requested, return network.
@@ -29,14 +25,14 @@ const cacheFirstAndRevalidate = (
         .then(nResp => {
           // set to outside variable so we can avoid race condition on cache return
           networkResponse = nResp;
-          if (!errorFn)
-            throw new Error("For refresh data you must supply an refreshFn");
-          else refreshFn(nResp);
+          if (!cb)
+            throw new Error("For refresh data you must supply a callback");
+          else cb(null, nResp);
         })
         .catch(() => {
-          if (!errorFn)
-            throw new Error("For refresh errors you must supply an errorFn");
-          else errorFn(err);
+          if (!cb)
+            throw new Error("For refresh errors you must supply a callback");
+          else cb(err);
         });
       const respToJson = await response.json();
       // return network response if it completed before cache was ready to be returned (possible race cond)
@@ -50,12 +46,10 @@ const request = needFresh => async () => {
   const jsonData = await cacheFirstAndRevalidate(
     "https://jsonplaceholder.typicode.com/todos/1",
     needFresh,
-    {
-      refreshFn: nData => {
-        console.log("network callback fired");
-        updateData(nData);
-      },
-      errorFn: err => console.log("network-error", err)
+    (err, nData) => {
+      if (err) throw new Error("network error");
+      console.log("network callback fired");
+      updateData(nData);
     }
   );
   updateData(jsonData);

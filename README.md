@@ -15,7 +15,7 @@ This file holds our `cacheFirstAndRevalidate()` api. This api is documented belo
 API
 
 ```
-cacheFirstAndRevalidate(url, needFresh, options)
+cacheFirstAndRevalidate(url, needFresh, callback)
 ```
 
 Example usage
@@ -25,9 +25,8 @@ Example usage
 const jsonData = await cacheFirstAndRevalidate(
   "https://jsonplaceholder.typicode.com/todos/1",
   false,
-  {
-    refreshFn: updateDataFn,
-    errorFn: updateErrFn
+  (error, response) => {
+    // do stuff with new update
   }
 );
 
