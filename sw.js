@@ -3,6 +3,7 @@ const domainsToCache = ["jsonplaceholder"];
 
 self.addEventListener("install", () => {
   console.log("installed");
+  // TODO: clear cached data
 });
 
 self.addEventListener("activate", () => {
