@@ -1,5 +1,5 @@
 const dataCacheName = "app-data-v1";
-const dataUrl = "jsonplaceholder";
+const domainsToCache = ["jsonplaceholder"];
 
 self.addEventListener("install", () => {
   console.log("installed");
@@ -12,7 +12,9 @@ self.addEventListener("activate", () => {
 self.addEventListener("fetch", e => {
   console.log("fetch", e);
 
-  if (e.request.url.indexOf(dataUrl) > -1) {
+  // loose check to only caching requests that are whitelisted
+  // TODO: replace with something more regex-y!
+  if (domainsToCache.find(url => e.request.url.indexOf(url) > -1)) {
     e.respondWith(
       caches.open(dataCacheName).then(function(cache) {
         return fetch(e.request).then(function(response) {
@@ -22,6 +24,7 @@ self.addEventListener("fetch", e => {
       })
     );
   } else {
+    // normal pass through for fetch requests we do not tamper with
     e.respondWith(fetch(e.request));
   }
 });
